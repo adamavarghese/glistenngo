@@ -10,6 +10,8 @@ export const services = [
   {
     title: "Exterior Detail",
     price: "$99.99",
+    image: "/assets/service-exterior.jpg",
+    imageAlt: "Exterior detailing service",
     items: [
       "Dual Foam Bath",
       "Power/Hand Wash",
@@ -17,11 +19,13 @@ export const services = [
       "Window Cleaning",
       "Rim & Tire Detailing",
     ],
+    note: "$24.99 add on for SUV • $49.99 add on for Trucks/3rd Row SUV",
   },
   {
     title: "Interior Detail",
     price: "$149.99",
-    popular: true,
+    image: "/assets/service-interior.jpg",
+    imageAlt: "Interior detailing service",
     items: [
       "Trash removal",
       "Vacuuming",
@@ -35,10 +39,14 @@ export const services = [
   {
     title: "Glisten & Go Deluxe Package",
     price: "$299.99",
+    popular: true,
+    image: "/assets/service-deluxe.jpg",
+    imageAlt: "Glisten N' Go deluxe detailing package",
     items: [
       "Full Exterior Detail / Interior Detail",
       "Full vehicle wax — protects & gives your vehicle a nice shine",
     ],
+    note: "$24.99 add on for SUV • $49.99 add on for Trucks/3rd Row SUV",
   },
 ];
 

@@ -13,6 +13,9 @@ export default function ServicesSection() {
             <div className="text-sm text-[color:var(--muted)]">
               Clean tiers, easy booking, premium results.
             </div>
+            <div className="mt-2 text-xs text-[color:var(--muted)]">
+              SUV add-on: $24.99 • Trucks/3rd row SUV add-on: $49.99
+            </div>
           </div>
           <a
             className="btn btn-primary"
@@ -31,6 +34,13 @@ export default function ServicesSection() {
               className={`service-card ${service.popular ? "popular" : ""}`}
             >
               {service.popular && <div className="tag mb-2">Popular</div>}
+              {service.image && (
+                <img
+                  className="service-image mb-3"
+                  src={service.image}
+                  alt={service.imageAlt ?? service.title}
+                />
+              )}
               <h3 className="text-lg">{service.title}</h3>
               <div className="text-2xl tracking-[-0.4px]">{service.price}</div>
               <div className="mt-2 text-xs text-[color:var(--muted)]">INCLUDES</div>
