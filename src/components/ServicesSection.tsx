@@ -39,6 +39,7 @@ export default function ServicesSection() {
                   className="service-image mb-3"
                   src={service.image}
                   alt={service.imageAlt ?? service.title}
+                  style={service.imagePosition ? { objectPosition: service.imagePosition } : undefined}
                 />
               )}
               <h3 className="text-lg">{service.title}</h3>

@@ -105,7 +105,19 @@ a {
   }
 
   .service-image {
-    @apply h-40 w-full rounded-[14px] border border-[color:var(--line)] object-cover;
+    @apply h-56 w-full rounded-[14px] border border-[color:var(--line)] object-cover;
+  }
+
+  .hero-image-wrap {
+    @apply overflow-hidden rounded-[calc(var(--radius)+4px)] border border-[color:var(--line)];
+  }
+
+  .hero-image {
+    @apply h-[270px] w-full object-cover;
+  }
+
+  .vision-image {
+    @apply h-[220px] w-full object-contain;
   }
 
   .photo {

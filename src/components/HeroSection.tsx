@@ -44,7 +44,13 @@ export default function HeroSection() {
         </div>
 
         <div className="card flex flex-col gap-3 p-5">
-          <div className="photo" role="img" aria-label="Detailing photo placeholder"></div>
+          <div className="hero-image-wrap">
+            <img
+              className="hero-image"
+              src="/assets/home-image.jpeg"
+              alt="Featured detailing highlight"
+            />
+          </div>
           <div className="pill">Tip: Replace with a clean "after" shot for instant premium feel.</div>
         </div>
       </div>

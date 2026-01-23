@@ -42,6 +42,7 @@ export const services = [
     popular: true,
     image: "/assets/service-deluxe.jpeg",
     imageAlt: "Glisten N' Go deluxe detailing package",
+    imagePosition: "center 85%",
     items: [
       "Full Exterior Detail / Interior Detail",
       "Full vehicle wax — protects & gives your vehicle a nice shine",

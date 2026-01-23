@@ -2,7 +2,7 @@
 # Photo List
 
 - Hero after-detailing shot of a freshly detailed car (wide, premium look for the hero card).
-- Brand vision image: detailed vehicle close-up or clean shot of the detailing setup/truck.
+- Brand vision image: detailed vehicle close-up or clean shot of the detailing setup/truck (suggested filename: `public/assets/brand-vision.jpeg`).
 - Exterior detail service photo (suggested filename: `public/assets/service-exterior.jpeg`).
 - Interior detail service photo (suggested filename: `public/assets/service-interior.jpeg`).
 - Glisten N' Go deluxe package photo (suggested filename: `public/assets/service-deluxe.jpeg`).
