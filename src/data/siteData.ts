@@ -10,7 +10,7 @@ export const services = [
   {
     title: "Exterior Detail",
     price: "$99.99",
-    image: "/assets/service-exterior.jpg",
+    image: "/assets/service-exterior.jpeg",
     imageAlt: "Exterior detailing service",
     items: [
       "Dual Foam Bath",
@@ -24,7 +24,7 @@ export const services = [
   {
     title: "Interior Detail",
     price: "$149.99",
-    image: "/assets/service-interior.jpg",
+    image: "/assets/service-interior.jpeg",
     imageAlt: "Interior detailing service",
     items: [
       "Trash removal",
@@ -40,7 +40,7 @@ export const services = [
     title: "Glisten & Go Deluxe Package",
     price: "$299.99",
     popular: true,
-    image: "/assets/service-deluxe.jpg",
+    image: "/assets/service-deluxe.jpeg",
     imageAlt: "Glisten N' Go deluxe detailing package",
     items: [
       "Full Exterior Detail / Interior Detail",
