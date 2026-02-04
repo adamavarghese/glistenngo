@@ -19,9 +19,7 @@ export default function ServicesSection() {
           </div>
           <a
             className="btn btn-primary"
-            href="https://www.glistenngo.com/appointments"
-            target="_blank"
-            rel="noopener"
+            href="#booking"
           >
             Book now
           </a>
@@ -45,14 +43,16 @@ export default function ServicesSection() {
               <h3 className="text-lg">{service.title}</h3>
               <div className="text-2xl tracking-[-0.4px]">{service.price}</div>
               <div className="mt-2 text-xs text-[color:var(--muted)]">INCLUDES</div>
-              <ul className="mt-3 grid gap-2 text-sm text-[color:var(--muted)]">
-                {service.items.map((item) => (
-                  <li key={item} className="flex items-start gap-2">
-                    <span className="mt-1 h-[18px] w-[18px] rounded-[7px] border border-[rgba(37,99,235,0.45)] bg-[rgba(37,99,235,0.15)]" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
+                <ul className="mt-3 grid gap-2 text-sm text-[color:var(--muted)]">
+                  {service.items.map((item) => (
+                    <li key={item} className="flex items-start gap-2">
+                    <span className="mt-1 flex h-[18px] w-[18px] items-center justify-center rounded-[7px] border border-[rgba(37,99,235,0.45)] bg-[rgba(37,99,235,0.15)] text-[11px] font-semibold text-[color:var(--accent-2)]">
+                      ✓
+                    </span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               {service.note && (
                 <div className="mt-3 text-xs text-[color:var(--muted)]">
                   {service.note}

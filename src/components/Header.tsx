@@ -9,7 +9,7 @@ export default function Header() {
     <header className="nav">
       <div className="site-container nav-inner">
         <a className="flex min-w-[220px] items-center gap-3" href="#top" aria-label="Home">
-          <span className="h-9 w-9 rounded-[12px] bg-[linear-gradient(135deg,var(--accent),var(--accent-2))] shadow-[0_16px_30px_rgba(59,130,246,0.25)]" />
+          <img className="logo-mark" src="/assets/logo.png" alt="Glisten N' Go logo" />
           <span className="leading-tight">
             <strong className="block tracking-[0.2px]">Glisten N' Go</strong>
             <span className="text-xs text-[color:var(--muted)]">Mobile Detailing</span>
@@ -34,9 +34,7 @@ export default function Header() {
           </a>
           <a
             className="btn btn-small btn-primary"
-            href="https://www.glistenngo.com/appointments"
-            target="_blank"
-            rel="noopener"
+            href="#booking"
           >
             Book now
           </a>
@@ -70,9 +68,7 @@ export default function Header() {
           </div>
           <a
             className="btn btn-primary mt-3 w-full"
-            href="https://www.glistenngo.com/appointments"
-            target="_blank"
-            rel="noopener"
+            href="#booking"
           >
             Book now
           </a>

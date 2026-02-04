@@ -19,9 +19,7 @@ export default function CtaSection() {
             </a>
             <a
               className="btn btn-primary"
-              href="https://www.glistenngo.com/appointments"
-              target="_blank"
-              rel="noopener"
+              href="#booking"
             >
               Book appointment
             </a>

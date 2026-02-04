@@ -2,8 +2,9 @@
 export const navLinks = [
   { label: "Services", href: "#services" },
   { label: "Add ons", href: "#addons" },
+  { label: "Book", href: "#booking" },
   { label: "Brand vision", href: "#vision" },
-  { label: "Contact", href: "#contact" },
+  { label: "Contact", href: "#booking" },
 ];
 
 export const services = [

@@ -26,9 +26,7 @@ export default function HeroSection() {
           <div className="mt-4 flex flex-wrap gap-3">
             <a
               className="btn btn-primary"
-              href="https://www.glistenngo.com/appointments"
-              target="_blank"
-              rel="noopener"
+              href="#booking"
             >
               Book appointment
             </a>
@@ -51,7 +49,6 @@ export default function HeroSection() {
               alt="Featured detailing highlight"
             />
           </div>
-          <div className="pill">Tip: Replace with a clean "after" shot for instant premium feel.</div>
         </div>
       </div>
     </section>

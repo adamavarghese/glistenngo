@@ -40,10 +40,6 @@ export default function VisionSection() {
             src="/assets/brand-vision.jpeg"
             alt="Brand vision detailing shot"
           />
-          <p className="mt-3 text-xs text-[color:var(--muted)]">
-            Replace with a "wow" after photo, or a clean shot of your setup/truck for
-            trust.
-          </p>
         </div>
       </div>
     </section>

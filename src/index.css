@@ -66,6 +66,10 @@ a {
     @apply flex items-center justify-between gap-3 py-3;
   }
 
+  .logo-mark {
+    @apply h-9 w-9 rounded-[12px] object-cover shadow-[0_16px_30px_rgba(59,130,246,0.25)];
+  }
+
   .btn {
     @apply inline-flex items-center justify-center gap-2 rounded-[14px] border border-[color:var(--line)] bg-[color:var(--surface)] px-4 py-2 text-sm font-medium transition;
   }

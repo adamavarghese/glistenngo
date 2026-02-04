@@ -8,9 +8,7 @@ export default function MobileBar() {
         </a>
         <a
           className="btn btn-primary flex-1"
-          href="https://www.glistenngo.com/appointments"
-          target="_blank"
-          rel="noopener"
+          href="#booking"
         >
           Book
         </a>
