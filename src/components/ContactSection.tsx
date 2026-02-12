@@ -1,4 +1,3 @@
-import type { FormEvent } from "react";
 import { useMemo, useState } from "react";
 import { bookingAddons, bookingServices, vehicleTypes } from "../data/bookingData";
 
@@ -13,9 +12,14 @@ export default function ContactSection() {
   const [serviceId, setServiceId] = useState(bookingServices[0]?.id ?? "");
   const [vehicleId, setVehicleId] = useState(vehicleTypes[0]?.id ?? "");
   const [addonIds, setAddonIds] = useState<string[]>([]);
+  const [bookingDate, setBookingDate] = useState("");
+  const [bookingTime, setBookingTime] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerAddress, setCustomerAddress] = useState("");
+  const [bookingNotes, setBookingNotes] = useState("");
 
-  const bookingEmail = (import.meta.env.VITE_BOOKING_EMAIL as string | undefined)?.trim();
-  const bookingEndpoint = bookingEmail ? `https://formsubmit.co/${bookingEmail}` : "";
   const nextUrl =
     typeof window === "undefined"
       ? ""
@@ -41,6 +45,22 @@ export default function ContactSection() {
       ? selectedAddons.map((addon) => addon.label).join(", ")
       : "No add-ons";
 
+  const bookingDateLabel = bookingDate || "Select a date";
+  const bookingTimeLabel = bookingTime
+    ? (() => {
+        const [hourValue, minuteValue] = bookingTime.split(":");
+        const hour = Number.parseInt(hourValue ?? "0", 10);
+        const period = hour >= 12 ? "PM" : "AM";
+        const displayHour = ((hour + 11) % 12) + 1;
+        return `${displayHour}:${minuteValue ?? "00"} ${period}`;
+      })()
+    : "Select a time";
+  const nameLabel = customerName || "Your name";
+  const emailLabel = customerEmail || "you@example.com";
+  const phoneLabel = customerPhone || "(000) 000-0000";
+  const addressLabel = customerAddress || "Street address, city, ZIP";
+  const notesLabel = bookingNotes || "No notes yet";
+
   const toggleAddon = (addonId: string) => {
     setAddonIds((current) => {
       const hasAddon = current.includes(addonId);
@@ -55,12 +75,6 @@ export default function ContactSection() {
 
       return [...current.filter((id) => !paintCorrectionIds.has(id)), addonId];
     });
-  };
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    if (!bookingEndpoint) {
-      event.preventDefault();
-    }
   };
 
   return (
@@ -87,25 +101,58 @@ export default function ContactSection() {
               <div className="text-xs text-[color:var(--muted)]">ADD-ONS</div>
               <div className="mt-1 text-sm">{addonSummary}</div>
             </div>
-            <div className="rounded-[14px] border border-[rgba(59,130,246,0.4)] bg-[rgba(59,130,246,0.12)] p-4">
-              <div className="text-xs text-[color:var(--muted)]">ESTIMATED TOTAL</div>
-              <div className="mt-1 text-xl tracking-[-0.3px]">{CURRENCY.format(total)}</div>
+            <div className="rounded-[18px] border border-[rgba(59,130,246,0.4)] bg-[rgba(59,130,246,0.12)] p-6">
+              <div className="text-sm font-semibold text-[color:var(--muted)]">
+                Booking Confirmation
+              </div>
+              <div className="mt-2 text-[clamp(20px,2.2vw,28px)] font-semibold tracking-[-0.4px]">
+                {bookingDateLabel} at {bookingTimeLabel}
+              </div>
+              <div className="mt-4 grid gap-3 text-sm text-[color:var(--muted)]">
+                <div>
+                  <span className="font-semibold text-[color:var(--text)]">Name:</span>{" "}
+                  {nameLabel}
+                </div>
+                <div>
+                  <span className="font-semibold text-[color:var(--text)]">Email:</span>{" "}
+                  {emailLabel}
+                </div>
+                <div>
+                  <span className="font-semibold text-[color:var(--text)]">Phone:</span>{" "}
+                  {phoneLabel}
+                </div>
+                <div>
+                  <span className="font-semibold text-[color:var(--text)]">Address:</span>{" "}
+                  {addressLabel}
+                </div>
+                <div>
+                  <span className="font-semibold text-[color:var(--text)]">Service:</span>{" "}
+                  {selectedService?.label}
+                </div>
+                <div>
+                  <span className="font-semibold text-[color:var(--text)]">Vehicle:</span>{" "}
+                  {selectedVehicle?.label}
+                </div>
+                <div>
+                  <span className="font-semibold text-[color:var(--text)]">Add-ons:</span>{" "}
+                  {addonSummary}
+                </div>
+                <div>
+                  <span className="font-semibold text-[color:var(--text)]">Notes:</span>{" "}
+                  {notesLabel}
+                </div>
+              </div>
+              <div className="mt-5 text-[clamp(22px,2.4vw,32px)] font-semibold tracking-[-0.4px] text-[color:var(--text)]">
+                Final price: {CURRENCY.format(total)}
+              </div>
             </div>
           </div>
-          {!bookingEmail && (
-            <p className="mt-3 text-xs text-[color:var(--muted)]">
-              Set <code>VITE_BOOKING_EMAIL</code> in your <code>.env</code> to activate
-              email delivery.
-            </p>
-          )}
         </div>
-
         <div className="service-card">
           <form
             className="grid gap-3"
             method="POST"
-            action={bookingEndpoint}
-            onSubmit={handleSubmit}
+            action="https://formsubmit.co/glistenandgoco@gmail.com"
           >
             <input type="hidden" name="_subject" value="New detailing booking request" />
             <input type="hidden" name="_template" value="table" />
@@ -125,13 +172,18 @@ export default function ContactSection() {
                 id="customer_name"
                 name="customer_name"
                 placeholder="Your full name"
+                value={customerName}
+                onChange={(event) => setCustomerName(event.target.value)}
                 required
               />
             </div>
 
             <div className="grid gap-2 md:grid-cols-2">
               <div className="grid gap-2">
-                <label className="text-xs text-[color:var(--muted)]" htmlFor="customer_email">
+                <label
+                  className="text-xs text-[color:var(--muted)]"
+                  htmlFor="customer_email"
+                >
                   Email
                 </label>
                 <input
@@ -140,11 +192,16 @@ export default function ContactSection() {
                   name="customer_email"
                   type="email"
                   placeholder="you@example.com"
+                  value={customerEmail}
+                  onChange={(event) => setCustomerEmail(event.target.value)}
                   required
                 />
               </div>
               <div className="grid gap-2">
-                <label className="text-xs text-[color:var(--muted)]" htmlFor="customer_phone">
+                <label
+                  className="text-xs text-[color:var(--muted)]"
+                  htmlFor="customer_phone"
+                >
                   Phone
                 </label>
                 <input
@@ -153,6 +210,8 @@ export default function ContactSection() {
                   name="customer_phone"
                   inputMode="tel"
                   placeholder="(917) 683-1007"
+                  value={customerPhone}
+                  onChange={(event) => setCustomerPhone(event.target.value)}
                   required
                 />
               </div>
@@ -160,16 +219,57 @@ export default function ContactSection() {
 
             <div className="grid gap-2 md:grid-cols-2">
               <div className="grid gap-2">
-                <label className="text-xs text-[color:var(--muted)]" htmlFor="booking_date">
+                <label
+                  className="text-xs text-[color:var(--muted)]"
+                  htmlFor="booking_date"
+                >
                   Preferred Date
                 </label>
-                <input className="input-field" id="booking_date" name="booking_date" type="date" required />
+                <input
+                  className="input-field"
+                  id="booking_date"
+                  name="booking_date"
+                  type="date"
+                  value={bookingDate}
+                  onChange={(event) => setBookingDate(event.target.value)}
+                  required
+                />
               </div>
               <div className="grid gap-2">
-                <label className="text-xs text-[color:var(--muted)]" htmlFor="booking_time">
+                <label
+                  className="text-xs text-[color:var(--muted)]"
+                  htmlFor="booking_time"
+                >
                   Preferred Time
                 </label>
-                <input className="input-field" id="booking_time" name="booking_time" type="time" required />
+                <select
+                  className="input-field"
+                  id="booking_time"
+                  name="booking_time"
+                  value={bookingTime}
+                  onChange={(event) => setBookingTime(event.target.value)}
+                  required
+                >
+                  <option value="" disabled>
+                    Select a time
+                  </option>
+                  {Array.from({ length: 11 }, (_, index) => 8 + index)
+                    .flatMap((hour) => {
+                      const minutes = hour === 18 ? ["00"] : ["00", "15", "30", "45"];
+                      return minutes.map((minute) => ({ hour, minute }));
+                    })
+                    .map(({ hour, minute }) => {
+                      const value = `${String(hour).padStart(2, "0")}:${minute}`;
+                      const period = hour >= 12 ? "PM" : "AM";
+                      const displayHour = ((hour + 11) % 12) + 1;
+                      const label = `${displayHour}:${minute} ${period}`;
+                      return (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      );
+                    })}
+                </select>
               </div>
             </div>
 
@@ -220,6 +320,8 @@ export default function ContactSection() {
                 id="address"
                 name="address"
                 placeholder="Street address, city, ZIP"
+                value={customerAddress}
+                onChange={(event) => setCustomerAddress(event.target.value)}
                 required
               />
             </div>
@@ -228,14 +330,17 @@ export default function ContactSection() {
               <legend className="px-1 text-xs text-[color:var(--muted)]">Add-ons</legend>
               <div className="grid gap-2 text-sm text-[color:var(--muted)]">
                 {bookingAddons.map((addon) => {
-                  const checked = addonIds.includes(addon.id);
+                  const isSelected = addonIds.includes(addon.id);
 
                   return (
-                    <label key={addon.id} className="flex cursor-pointer items-center justify-between gap-3">
+                    <label
+                      key={addon.id}
+                      className="flex cursor-pointer items-center justify-between gap-3"
+                    >
                       <span className="flex items-center gap-2">
                         <input
                           type="checkbox"
-                          checked={checked}
+                          checked={isSelected}
                           onChange={() => toggleAddon(addon.id)}
                         />
                         <span>{addon.label}</span>
@@ -256,14 +361,17 @@ export default function ContactSection() {
                 id="booking_notes"
                 name="booking_notes"
                 placeholder="Address, parking notes, or anything else we should know"
+                value={bookingNotes}
+                onChange={(event) => setBookingNotes(event.target.value)}
               />
             </div>
 
-            <button className="btn btn-primary" type="submit" disabled={!bookingEndpoint}>
+            <button className="btn btn-primary" type="submit">
               Request booking ({CURRENCY.format(total)})
             </button>
           </form>
         </div>
+
       </div>
     </section>
   );
