@@ -22,16 +22,7 @@ export default function VisionSection() {
             >
               IG
             </a>
-            <span className="h-11 w-11 rounded-[14px] border border-[color:var(--line)] bg-[color:var(--surface-2)] text-center leading-[44px]">
-              ★
-            </span>
-            <span className="h-11 w-11 rounded-[14px] border border-[color:var(--line)] bg-[color:var(--surface-2)] text-center leading-[44px]">
-              ✓
-            </span>
           </div>
-          <p className="mt-3 text-xs text-[color:var(--muted)]">
-            Swap the icons above for real social icons or SVGs.
-          </p>
         </div>
 
         <div className="service-card">
