@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { bookingAddons, bookingServices, vehicleTypes } from "../data/bookingData";
 
 const CURRENCY = new Intl.NumberFormat("en-US", {
@@ -7,6 +7,9 @@ const CURRENCY = new Intl.NumberFormat("en-US", {
 });
 
 const paintCorrectionIds = new Set(["paint-1", "paint-2", "paint-3"]);
+const NJ_SALES_TAX_RATE = 0.06625;
+const BOOKING_EMAIL = "glistenandgoco@gmail.com";
+const BOOKING_PHONE_HREF = "tel:+19176831007";
 
 export default function ContactSection() {
   const [serviceId, setServiceId] = useState(bookingServices[0]?.id ?? "");
@@ -19,11 +22,15 @@ export default function ContactSection() {
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
   const [bookingNotes, setBookingNotes] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
 
   const nextUrl =
     typeof window === "undefined"
       ? ""
       : `${window.location.origin}${window.location.pathname}#booking`;
+  const formAction = `https://formsubmit.co/${BOOKING_EMAIL}`;
+  const ajaxAction = `https://formsubmit.co/ajax/${BOOKING_EMAIL}`;
 
   const selectedService =
     bookingServices.find((service) => service.id === serviceId) ?? bookingServices[0];
@@ -35,10 +42,12 @@ export default function ContactSection() {
     [addonIds],
   );
 
-  const total =
+  const subtotal =
     (selectedService?.price ?? 0) +
     (selectedVehicle?.price ?? 0) +
     selectedAddons.reduce((sum, addon) => sum + addon.price, 0);
+  const salesTax = subtotal * NJ_SALES_TAX_RATE;
+  const total = subtotal + salesTax;
 
   const addonSummary =
     selectedAddons.length > 0
@@ -75,6 +84,77 @@ export default function ContactSection() {
 
       return [...current.filter((id) => !paintCorrectionIds.has(id)), addonId];
     });
+  };
+
+  const getFallbackMailto = () => {
+    const subject = `Booking request: ${selectedService?.label ?? "Detailing service"}`;
+    const bodyLines = [
+      `Name: ${customerName}`,
+      `Email: ${customerEmail}`,
+      `Phone: ${customerPhone}`,
+      `Address: ${customerAddress}`,
+      `Preferred date: ${bookingDate || "Not provided"}`,
+      `Preferred time: ${bookingTimeLabel}`,
+      `Service: ${selectedService?.label ?? ""}`,
+      `Vehicle: ${selectedVehicle?.label ?? ""}`,
+      `Add-ons: ${addonSummary}`,
+      `Subtotal: ${CURRENCY.format(subtotal)}`,
+      `NJ sales tax (6.625%): ${CURRENCY.format(salesTax)}`,
+      `Estimated total: ${CURRENCY.format(total)}`,
+      "",
+      "Notes:",
+      bookingNotes || "None",
+    ];
+    const params = new URLSearchParams({
+      subject,
+      body: bodyLines.join("\n"),
+    });
+    return `mailto:${BOOKING_EMAIL}?${params.toString()}`;
+  };
+
+  const resetForm = () => {
+    setServiceId(bookingServices[0]?.id ?? "");
+    setVehicleId(vehicleTypes[0]?.id ?? "");
+    setAddonIds([]);
+    setBookingDate("");
+    setBookingTime("");
+    setCustomerName("");
+    setCustomerEmail("");
+    setCustomerPhone("");
+    setCustomerAddress("");
+    setBookingNotes("");
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus("idle");
+
+    const formData = new FormData(event.currentTarget);
+
+    try {
+      const response = await fetch(ajaxAction, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed with HTTP ${response.status}`);
+      }
+
+      setSubmitStatus("success");
+      resetForm();
+    } catch {
+      setSubmitStatus("error");
+      if (typeof window !== "undefined") {
+        window.location.href = getFallbackMailto();
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -142,7 +222,19 @@ export default function ContactSection() {
                   {notesLabel}
                 </div>
               </div>
-              <div className="mt-5 text-[clamp(22px,2.4vw,32px)] font-semibold tracking-[-0.4px] text-[color:var(--text)]">
+              <div className="mt-5 grid gap-2 text-sm text-[color:var(--muted)]">
+                <div>
+                  <span className="font-semibold text-[color:var(--text)]">Subtotal:</span>{" "}
+                  {CURRENCY.format(subtotal)}
+                </div>
+                <div>
+                  <span className="font-semibold text-[color:var(--text)]">
+                    NJ sales tax (6.625%):
+                  </span>{" "}
+                  {CURRENCY.format(salesTax)}
+                </div>
+              </div>
+              <div className="mt-3 text-[clamp(22px,2.4vw,32px)] font-semibold tracking-[-0.4px] text-[color:var(--text)]">
                 Final price: {CURRENCY.format(total)}
               </div>
             </div>
@@ -152,15 +244,23 @@ export default function ContactSection() {
           <form
             className="grid gap-3"
             method="POST"
-            action="https://formsubmit.co/glistenandgoco@gmail.com"
+            action={formAction}
+            onSubmit={handleSubmit}
           >
             <input type="hidden" name="_subject" value="New detailing booking request" />
             <input type="hidden" name="_template" value="table" />
             <input type="hidden" name="_captcha" value="false" />
             <input type="hidden" name="_next" value={nextUrl} />
+            <input type="hidden" name="_replyto" value={customerEmail} />
             <input type="hidden" name="service" value={selectedService?.label ?? ""} />
             <input type="hidden" name="vehicle_type" value={selectedVehicle?.label ?? ""} />
             <input type="hidden" name="selected_addons" value={addonSummary} />
+            <input type="hidden" name="estimated_subtotal" value={CURRENCY.format(subtotal)} />
+            <input
+              type="hidden"
+              name="estimated_sales_tax_nj_6_625_percent"
+              value={CURRENCY.format(salesTax)}
+            />
             <input type="hidden" name="estimated_total" value={CURRENCY.format(total)} />
 
             <div className="grid gap-2">
@@ -170,7 +270,7 @@ export default function ContactSection() {
               <input
                 className="input-field"
                 id="customer_name"
-                name="customer_name"
+                name="name"
                 placeholder="Your full name"
                 value={customerName}
                 onChange={(event) => setCustomerName(event.target.value)}
@@ -189,7 +289,7 @@ export default function ContactSection() {
                 <input
                   className="input-field"
                   id="customer_email"
-                  name="customer_email"
+                  name="email"
                   type="email"
                   placeholder="you@example.com"
                   value={customerEmail}
@@ -207,7 +307,7 @@ export default function ContactSection() {
                 <input
                   className="input-field"
                   id="customer_phone"
-                  name="customer_phone"
+                  name="phone"
                   inputMode="tel"
                   placeholder="(917) 683-1007"
                   value={customerPhone}
@@ -280,6 +380,7 @@ export default function ContactSection() {
               <select
                 className="input-field"
                 id="service_pick"
+                name="service_pick"
                 value={serviceId}
                 onChange={(event) => setServiceId(event.target.value)}
                 required
@@ -299,6 +400,7 @@ export default function ContactSection() {
               <select
                 className="input-field"
                 id="vehicle_pick"
+                name="vehicle_pick"
                 value={vehicleId}
                 onChange={(event) => setVehicleId(event.target.value)}
                 required
@@ -340,6 +442,8 @@ export default function ContactSection() {
                       <span className="flex items-center gap-2">
                         <input
                           type="checkbox"
+                          name="addon_choices"
+                          value={addon.label}
                           checked={isSelected}
                           onChange={() => toggleAddon(addon.id)}
                         />
@@ -359,16 +463,37 @@ export default function ContactSection() {
               <textarea
                 className="input-field min-h-[100px]"
                 id="booking_notes"
-                name="booking_notes"
+                name="message"
                 placeholder="Address, parking notes, or anything else we should know"
                 value={bookingNotes}
                 onChange={(event) => setBookingNotes(event.target.value)}
               />
             </div>
 
-            <button className="btn btn-primary" type="submit">
-              Request booking ({CURRENCY.format(total)})
+            <button className="btn btn-primary" type="submit" disabled={isSubmitting}>
+              {isSubmitting
+                ? "Sending booking request..."
+                : `Request booking (${CURRENCY.format(total)})`}
             </button>
+            {submitStatus === "success" ? (
+              <p className="text-sm text-emerald-600">
+                Booking request sent. We will follow up shortly.
+              </p>
+            ) : null}
+            {submitStatus === "error" ? (
+              <p className="text-sm text-amber-700">
+                Booking service is temporarily unavailable. A prefilled email draft should
+                open now. If not, contact us at{" "}
+                <a className="underline" href={`mailto:${BOOKING_EMAIL}`}>
+                  {BOOKING_EMAIL}
+                </a>{" "}
+                or{" "}
+                <a className="underline" href={BOOKING_PHONE_HREF}>
+                  (917) 683-1007
+                </a>
+                .
+              </p>
+            ) : null}
           </form>
         </div>
 
