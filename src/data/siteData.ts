@@ -4,6 +4,7 @@ export const navLinks = [
   { label: "Add ons", href: "#addons" },
   { label: "Book", href: "#booking" },
   { label: "Brand vision", href: "#vision" },
+  { label: "Instagram", href: "https://www.instagram.com/glisten.n.go/" },
   { label: "Contact", href: "#booking" },
 ];
 
@@ -75,7 +76,7 @@ export const addons = [
   },
   {
     title: "Ceramic Coating",
-    price: "$199.99",
+    price: "$1,849.99",
     copy: "Hydrophobic properties make your car easier to maintain. Lasts up to 1 year.",
     fullWidth: true,
   },

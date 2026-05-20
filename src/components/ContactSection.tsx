@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useState } from "react";
 import { bookingAddons, bookingServices, vehicleTypes } from "../data/bookingData";
 
 const CURRENCY = new Intl.NumberFormat("en-US", {
@@ -10,27 +10,18 @@ const paintCorrectionIds = new Set(["paint-1", "paint-2", "paint-3"]);
 const NJ_SALES_TAX_RATE = 0.06625;
 const BOOKING_EMAIL = "glistenandgoco@gmail.com";
 const BOOKING_PHONE_HREF = "tel:+19176831007";
+const CALENDLY_URL =
+  import.meta.env.VITE_CALENDLY_URL ?? "https://calendly.com/glistenandgoco";
 
 export default function ContactSection() {
   const [serviceId, setServiceId] = useState(bookingServices[0]?.id ?? "");
   const [vehicleId, setVehicleId] = useState(vehicleTypes[0]?.id ?? "");
   const [addonIds, setAddonIds] = useState<string[]>([]);
-  const [bookingDate, setBookingDate] = useState("");
-  const [bookingTime, setBookingTime] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
   const [bookingNotes, setBookingNotes] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
-
-  const nextUrl =
-    typeof window === "undefined"
-      ? ""
-      : `${window.location.origin}${window.location.pathname}#booking`;
-  const formAction = `https://formsubmit.co/${BOOKING_EMAIL}`;
-  const ajaxAction = `https://formsubmit.co/ajax/${BOOKING_EMAIL}`;
 
   const selectedService =
     bookingServices.find((service) => service.id === serviceId) ?? bookingServices[0];
@@ -54,16 +45,6 @@ export default function ContactSection() {
       ? selectedAddons.map((addon) => addon.label).join(", ")
       : "No add-ons";
 
-  const bookingDateLabel = bookingDate || "Select a date";
-  const bookingTimeLabel = bookingTime
-    ? (() => {
-        const [hourValue, minuteValue] = bookingTime.split(":");
-        const hour = Number.parseInt(hourValue ?? "0", 10);
-        const period = hour >= 12 ? "PM" : "AM";
-        const displayHour = ((hour + 11) % 12) + 1;
-        return `${displayHour}:${minuteValue ?? "00"} ${period}`;
-      })()
-    : "Select a time";
   const nameLabel = customerName || "Your name";
   const emailLabel = customerEmail || "you@example.com";
   const phoneLabel = customerPhone || "(000) 000-0000";
@@ -86,76 +67,28 @@ export default function ContactSection() {
     });
   };
 
-  const getFallbackMailto = () => {
-    const subject = `Booking request: ${selectedService?.label ?? "Detailing service"}`;
-    const bodyLines = [
-      `Name: ${customerName}`,
-      `Email: ${customerEmail}`,
-      `Phone: ${customerPhone}`,
-      `Address: ${customerAddress}`,
-      `Preferred date: ${bookingDate || "Not provided"}`,
-      `Preferred time: ${bookingTimeLabel}`,
-      `Service: ${selectedService?.label ?? ""}`,
-      `Vehicle: ${selectedVehicle?.label ?? ""}`,
-      `Add-ons: ${addonSummary}`,
-      `Subtotal: ${CURRENCY.format(subtotal)}`,
-      `NJ sales tax (6.625%): ${CURRENCY.format(salesTax)}`,
-      `Estimated total: ${CURRENCY.format(total)}`,
-      "",
-      "Notes:",
-      bookingNotes || "None",
-    ];
-    const params = new URLSearchParams({
-      subject,
-      body: bodyLines.join("\n"),
-    });
-    return `mailto:${BOOKING_EMAIL}?${params.toString()}`;
-  };
+  const calendlySummary = [
+    `Phone: ${customerPhone || "Not provided"}`,
+    `Address: ${customerAddress || "Not provided"}`,
+    `Service: ${selectedService?.label ?? ""}`,
+    `Vehicle: ${selectedVehicle?.label ?? ""}`,
+    `Add-ons: ${addonSummary}`,
+    `Subtotal: ${CURRENCY.format(subtotal)}`,
+    `NJ sales tax (6.625%): ${CURRENCY.format(salesTax)}`,
+    `Estimated total: ${CURRENCY.format(total)}`,
+    `Notes: ${bookingNotes || "None"}`,
+  ].join("\n");
 
-  const resetForm = () => {
-    setServiceId(bookingServices[0]?.id ?? "");
-    setVehicleId(vehicleTypes[0]?.id ?? "");
-    setAddonIds([]);
-    setBookingDate("");
-    setBookingTime("");
-    setCustomerName("");
-    setCustomerEmail("");
-    setCustomerPhone("");
-    setCustomerAddress("");
-    setBookingNotes("");
-  };
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsSubmitting(true);
-    setSubmitStatus("idle");
-
-    const formData = new FormData(event.currentTarget);
-
-    try {
-      const response = await fetch(ajaxAction, {
-        method: "POST",
-        body: formData,
-        headers: {
-          Accept: "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed with HTTP ${response.status}`);
-      }
-
-      setSubmitStatus("success");
-      resetForm();
-    } catch {
-      setSubmitStatus("error");
-      if (typeof window !== "undefined") {
-        window.location.href = getFallbackMailto();
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const calendlyHref = `${CALENDLY_URL}?${new URLSearchParams({
+    name: customerName,
+    email: customerEmail,
+    a1: customerPhone,
+    a2: customerAddress,
+    a3: `${selectedService?.label ?? ""} - ${selectedVehicle?.label ?? ""}`,
+    a4: addonSummary,
+    a5: CURRENCY.format(total),
+    a6: calendlySummary,
+  }).toString()}`;
 
   return (
     <section id="booking" className="section pt-0">
@@ -165,8 +98,8 @@ export default function ContactSection() {
             Book Your Detail
           </h2>
           <p className="mt-3 text-sm text-[color:var(--muted)]">
-            Pick your service, vehicle type, and preferred date/time. We will email you a
-            full booking summary with pricing.
+            Pick your service and vehicle type, then finish scheduling through Calendly.
+            Your estimate will be carried into the booking details.
           </p>
           <div className="mt-4 grid gap-3">
             <div className="rounded-[14px] border border-[color:var(--line)] bg-[color:var(--surface)] p-4">
@@ -183,10 +116,10 @@ export default function ContactSection() {
             </div>
             <div className="rounded-[18px] border border-[rgba(59,130,246,0.4)] bg-[rgba(59,130,246,0.12)] p-6">
               <div className="text-sm font-semibold text-[color:var(--muted)]">
-                Booking Confirmation
+                Booking Summary
               </div>
               <div className="mt-2 text-[clamp(20px,2.2vw,28px)] font-semibold tracking-[-0.4px]">
-                {bookingDateLabel} at {bookingTimeLabel}
+                Schedule your appointment in Calendly
               </div>
               <div className="mt-4 grid gap-3 text-sm text-[color:var(--muted)]">
                 <div>
@@ -241,28 +174,7 @@ export default function ContactSection() {
           </div>
         </div>
         <div className="service-card">
-          <form
-            className="grid gap-3"
-            method="POST"
-            action={formAction}
-            onSubmit={handleSubmit}
-          >
-            <input type="hidden" name="_subject" value="New detailing booking request" />
-            <input type="hidden" name="_template" value="table" />
-            <input type="hidden" name="_captcha" value="false" />
-            <input type="hidden" name="_next" value={nextUrl} />
-            <input type="hidden" name="_replyto" value={customerEmail} />
-            <input type="hidden" name="service" value={selectedService?.label ?? ""} />
-            <input type="hidden" name="vehicle_type" value={selectedVehicle?.label ?? ""} />
-            <input type="hidden" name="selected_addons" value={addonSummary} />
-            <input type="hidden" name="estimated_subtotal" value={CURRENCY.format(subtotal)} />
-            <input
-              type="hidden"
-              name="estimated_sales_tax_nj_6_625_percent"
-              value={CURRENCY.format(salesTax)}
-            />
-            <input type="hidden" name="estimated_total" value={CURRENCY.format(total)} />
-
+          <div className="grid gap-3">
             <div className="grid gap-2">
               <label className="text-xs text-[color:var(--muted)]" htmlFor="customer_name">
                 Name
@@ -314,62 +226,6 @@ export default function ContactSection() {
                   onChange={(event) => setCustomerPhone(event.target.value)}
                   required
                 />
-              </div>
-            </div>
-
-            <div className="grid gap-2 md:grid-cols-2">
-              <div className="grid gap-2">
-                <label
-                  className="text-xs text-[color:var(--muted)]"
-                  htmlFor="booking_date"
-                >
-                  Preferred Date
-                </label>
-                <input
-                  className="input-field"
-                  id="booking_date"
-                  name="booking_date"
-                  type="date"
-                  value={bookingDate}
-                  onChange={(event) => setBookingDate(event.target.value)}
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <label
-                  className="text-xs text-[color:var(--muted)]"
-                  htmlFor="booking_time"
-                >
-                  Preferred Time
-                </label>
-                <select
-                  className="input-field"
-                  id="booking_time"
-                  name="booking_time"
-                  value={bookingTime}
-                  onChange={(event) => setBookingTime(event.target.value)}
-                  required
-                >
-                  <option value="" disabled>
-                    Select a time
-                  </option>
-                  {Array.from({ length: 11 }, (_, index) => 8 + index)
-                    .flatMap((hour) => {
-                      const minutes = hour === 18 ? ["00"] : ["00", "15", "30", "45"];
-                      return minutes.map((minute) => ({ hour, minute }));
-                    })
-                    .map(({ hour, minute }) => {
-                      const value = `${String(hour).padStart(2, "0")}:${minute}`;
-                      const period = hour >= 12 ? "PM" : "AM";
-                      const displayHour = ((hour + 11) % 12) + 1;
-                      const label = `${displayHour}:${minute} ${period}`;
-                      return (
-                        <option key={value} value={value}>
-                          {label}
-                        </option>
-                      );
-                    })}
-                </select>
               </div>
             </div>
 
@@ -470,31 +326,27 @@ export default function ContactSection() {
               />
             </div>
 
-            <button className="btn btn-primary" type="submit" disabled={isSubmitting}>
-              {isSubmitting
-                ? "Sending booking request..."
-                : `Request booking (${CURRENCY.format(total)})`}
-            </button>
-            {submitStatus === "success" ? (
-              <p className="text-sm text-emerald-600">
-                Booking request sent. We will follow up shortly.
-              </p>
-            ) : null}
-            {submitStatus === "error" ? (
-              <p className="text-sm text-amber-700">
-                Booking service is temporarily unavailable. A prefilled email draft should
-                open now. If not, contact us at{" "}
-                <a className="underline" href={`mailto:${BOOKING_EMAIL}`}>
-                  {BOOKING_EMAIL}
-                </a>{" "}
-                or{" "}
-                <a className="underline" href={BOOKING_PHONE_HREF}>
-                  (917) 683-1007
-                </a>
-                .
-              </p>
-            ) : null}
-          </form>
+            <a
+              className="btn btn-primary"
+              href={calendlyHref}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Continue to Calendly ({CURRENCY.format(total)})
+            </a>
+            <p className="text-sm text-[color:var(--muted)]">
+              Calendly will open in a new tab so you can choose the exact appointment
+              time. For help, email{" "}
+              <a className="underline" href={`mailto:${BOOKING_EMAIL}`}>
+                {BOOKING_EMAIL}
+              </a>{" "}
+              or call/text{" "}
+              <a className="underline" href={BOOKING_PHONE_HREF}>
+                (917) 683-1007
+              </a>
+              .
+            </p>
+          </div>
         </div>
 
       </div>

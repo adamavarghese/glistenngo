@@ -23,5 +23,5 @@ export const bookingAddons: BookingOption[] = [
   { id: "engine-bay", label: "Engine Bay Cleaning", price: 29.99 },
   { id: "wax", label: "Wax", price: 79.99 },
   { id: "steam", label: "Steam Cleaning", price: 79.99 },
-  { id: "ceramic", label: "Ceramic Coating", price: 199.99 },
+  { id: "ceramic", label: "Ceramic Coating", price: 1849.99 },
 ];
