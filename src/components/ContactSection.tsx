@@ -89,7 +89,7 @@ export default function ContactSection() {
     a1: customerPhone ? `1${customerPhone.replace(/\D/g, "")}` : "",
     a2: customerAddress,
     a3: addonSummary,
-    a4: `${selectedService?.label ?? ""} - ${selectedVehicle?.label ?? ""}`,
+    a4: bookingNotes,
     a5: CURRENCY.format(total),
     a6: calendlySummary,
   }).toString()}`;
