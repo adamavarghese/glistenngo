@@ -87,11 +87,11 @@ export default function ContactSection() {
     name: customerName,
     email: customerEmail,
     a1: customerPhone.replace(/\D/g, ""),
-    a2: customerAddress,
-    a3: addonSummary,
-    a4: bookingNotes,
-    a5: CURRENCY.format(total),
-    a6: calendlySummary,
+    a2: customerPhone.replace(/\D/g, ""),
+    a3: customerAddress,
+    a4: addonSummary,
+    a5: bookingNotes,
+    a6: CURRENCY.format(total),
   }).toString()}`;
 
   return (
