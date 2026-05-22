@@ -77,7 +77,7 @@ export const addons = [
   {
     title: "Ceramic Coating",
     price: "$1,849.99",
-    copy: "Hydrophobic properties make your car easier to maintain. Lasts up to 1 year.",
+    copy: "Professional-grade ceramic coating that bonds to your paint and creates a hard, hydrophobic layer. Repels water, dirt, and UV rays — keeping your car cleaner longer and protecting against oxidation and fading. Lasts up to 3 years.",
     fullWidth: true,
   },
 ];

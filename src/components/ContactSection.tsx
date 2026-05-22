@@ -10,8 +10,11 @@ const paintCorrectionIds = new Set(["paint-1", "paint-2", "paint-3"]);
 const NJ_SALES_TAX_RATE = 0.06625;
 const BOOKING_EMAIL = "glistenandgoco@gmail.com";
 const BOOKING_PHONE_HREF = "tel:+19176831007";
-const CALENDLY_URL =
-  import.meta.env.VITE_CALENDLY_URL ?? "https://calendly.com/glistenandgoco";
+const CALENDLY_URLS: Record<string, string> = {
+  exterior: "https://calendly.com/glistenandgoco/30min",
+  interior: "https://calendly.com/glistenandgoco/interior-detail-149-99",
+  deluxe: "https://calendly.com/glistenandgoco/glisten-n-go-deluxe-package",
+};
 
 export default function ContactSection() {
   const [serviceId, setServiceId] = useState(bookingServices[0]?.id ?? "");
@@ -79,13 +82,14 @@ export default function ContactSection() {
     `Notes: ${bookingNotes || "None"}`,
   ].join("\n");
 
-  const calendlyHref = `${CALENDLY_URL}?${new URLSearchParams({
+  const calendlyBaseUrl = CALENDLY_URLS[serviceId] ?? CALENDLY_URLS.exterior;
+  const calendlyHref = `${calendlyBaseUrl}?${new URLSearchParams({
     name: customerName,
     email: customerEmail,
-    a1: customerPhone,
+    a1: customerPhone ? `1${customerPhone.replace(/\D/g, "")}` : "",
     a2: customerAddress,
-    a3: `${selectedService?.label ?? ""} - ${selectedVehicle?.label ?? ""}`,
-    a4: addonSummary,
+    a3: addonSummary,
+    a4: `${selectedService?.label ?? ""} - ${selectedVehicle?.label ?? ""}`,
     a5: CURRENCY.format(total),
     a6: calendlySummary,
   }).toString()}`;
