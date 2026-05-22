@@ -86,7 +86,7 @@ export default function ContactSection() {
   const calendlyHref = `${calendlyBaseUrl}?${new URLSearchParams({
     name: customerName,
     email: customerEmail,
-    a1: customerPhone ? `1${customerPhone.replace(/\D/g, "")}` : "",
+    a1: customerPhone.replace(/\D/g, ""),
     a2: customerAddress,
     a3: addonSummary,
     a4: bookingNotes,
