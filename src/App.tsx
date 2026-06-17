@@ -1,3 +1,4 @@
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import AddonsSection from "./components/AddonsSection";
 import ContactSection from "./components/ContactSection";
 import CtaSection from "./components/CtaSection";
@@ -25,6 +26,7 @@ export default function App() {
       <ContactSection />
       <Footer year={year} />
       <MobileBar />
+      <SpeedInsights />
     </div>
   );
 }
