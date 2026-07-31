@@ -1,4 +1,6 @@
 // Shared navigation, services, and add-on content for the site.
+export const bookingUrl = "https://calendar.app.google/x7p3vgmQKYT9FKX88";
+
 export const navLinks = [
   { label: "Services", href: "#services" },
   { label: "Add ons", href: "#addons" },

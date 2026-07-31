@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { bookingAddons, bookingServices, vehicleTypes } from "../data/bookingData";
+import { bookingUrl } from "../data/siteData";
 
 const CURRENCY = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -10,11 +11,6 @@ const paintCorrectionIds = new Set(["paint-1", "paint-2", "paint-3"]);
 const NJ_SALES_TAX_RATE = 0.06625;
 const BOOKING_EMAIL = "glistenandgoco@gmail.com";
 const BOOKING_PHONE_HREF = "tel:+19176831007";
-const CALENDLY_URLS: Record<string, string> = {
-  exterior: "https://calendly.com/glistenandgoco/30min",
-  interior: "https://calendly.com/glistenandgoco/interior-detail-149-99",
-  deluxe: "https://calendly.com/glistenandgoco/glisten-n-go-deluxe-package",
-};
 
 export default function ContactSection() {
   const [serviceId, setServiceId] = useState(bookingServices[0]?.id ?? "");
@@ -70,30 +66,6 @@ export default function ContactSection() {
     });
   };
 
-  const calendlySummary = [
-    `Phone: ${customerPhone || "Not provided"}`,
-    `Address: ${customerAddress || "Not provided"}`,
-    `Service: ${selectedService?.label ?? ""}`,
-    `Vehicle: ${selectedVehicle?.label ?? ""}`,
-    `Add-ons: ${addonSummary}`,
-    `Subtotal: ${CURRENCY.format(subtotal)}`,
-    `NJ sales tax (6.625%): ${CURRENCY.format(salesTax)}`,
-    `Estimated total: ${CURRENCY.format(total)}`,
-    `Notes: ${bookingNotes || "None"}`,
-  ].join("\n");
-
-  const calendlyBaseUrl = CALENDLY_URLS[serviceId] ?? CALENDLY_URLS.exterior;
-  const calendlyHref = `${calendlyBaseUrl}?${new URLSearchParams({
-    name: customerName,
-    email: customerEmail,
-    a1: customerPhone.replace(/\D/g, ""),
-    a2: customerPhone.replace(/\D/g, ""),
-    a3: customerAddress,
-    a4: addonSummary,
-    a5: bookingNotes,
-    a6: CURRENCY.format(total),
-  }).toString()}`;
-
   return (
     <section id="booking" className="section pt-0">
       <div className="site-container grid gap-4 lg:grid-cols-2">
@@ -102,8 +74,8 @@ export default function ContactSection() {
             Book Your Detail
           </h2>
           <p className="mt-3 text-sm text-[color:var(--muted)]">
-            Pick your service and vehicle type, then finish scheduling through Calendly.
-            Your estimate will be carried into the booking details.
+            Pick your service and vehicle type to see your price, then schedule a real
+            open time slot on our calendar.
           </p>
           <div className="mt-4 grid gap-3">
             <div className="rounded-[14px] border border-[color:var(--line)] bg-[color:var(--surface)] p-4">
@@ -123,7 +95,7 @@ export default function ContactSection() {
                 Booking Summary
               </div>
               <div className="mt-2 text-[clamp(20px,2.2vw,28px)] font-semibold tracking-[-0.4px]">
-                Schedule your appointment in Calendly
+                Schedule your appointment on our calendar
               </div>
               <div className="mt-4 grid gap-3 text-sm text-[color:var(--muted)]">
                 <div>
@@ -332,15 +304,15 @@ export default function ContactSection() {
 
             <a
               className="btn btn-primary"
-              href={calendlyHref}
+              href={bookingUrl}
               target="_blank"
               rel="noreferrer"
             >
-              Continue to Calendly ({CURRENCY.format(total)})
+              Schedule Your Appointment ({CURRENCY.format(total)})
             </a>
             <p className="text-sm text-[color:var(--muted)]">
-              Calendly will open in a new tab so you can choose the exact appointment
-              time. For help, email{" "}
+              Our calendar will open in a new tab so you can choose a real open
+              appointment time. For help, email{" "}
               <a className="underline" href={`mailto:${BOOKING_EMAIL}`}>
                 {BOOKING_EMAIL}
               </a>{" "}
